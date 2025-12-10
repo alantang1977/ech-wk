@@ -64,7 +64,7 @@ jobs:
             cgo_enabled: "0"
 
           # Linux 桌面版 arm64
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-latest-arm64
             goos: linux
             goarch: arm64
             exe_ext: ""
@@ -142,18 +142,18 @@ jobs:
         shell: bash
 
       - name: Install PyInstaller and dependencies
-          if: startsWith(github.ref, 'refs/tags/') && matrix.enable_gui == true
-          run: |
-            python -m pip install --upgrade pip
-            if [ "${{ matrix.goos }}" == "linux" ]; then
-              # Linux: 使用系统包中的 PyQt5，只安装其他依赖
-              pip install pyinstaller pystray Pillow requests PySocks
-              python -c "import PyQt5.QtWidgets; print('PyQt5 available')" || echo "PyQt5 not available, will skip GUI build"
-            else
-              # Windows / macOS: 从 PyPI 安装
-              pip install pyinstaller PyQt5 pystray Pillow requests PySocks
-            fi
-          shell: bash
+        if: startsWith(github.ref, 'refs/tags/') && matrix.enable_gui == true
+        run: |
+          python -m pip install --upgrade pip
+          if [ "${{ matrix.goos }}" == "linux" ]; then
+            # Linux: 使用系统包中的 PyQt5，只安装其他依赖
+            pip install pyinstaller pystray Pillow requests PySocks
+            python -c "import PyQt5.QtWidgets; print('PyQt5 available')" || echo "PyQt5 not available, will skip GUI build"
+          else
+            # Windows / macOS: 从 PyPI 安装
+            pip install pyinstaller PyQt5 pystray Pillow requests PySocks
+          fi
+        shell: bash
 
       - name: Build Python executable
         if: startsWith(github.ref, 'refs/tags/') && matrix.enable_gui == true
